@@ -1,0 +1,10 @@
+﻿# Exclude daily chart screenshots and historical archive dumps
+screenshots/
+history/
+
+# Node & OS caches
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+*.tmp
