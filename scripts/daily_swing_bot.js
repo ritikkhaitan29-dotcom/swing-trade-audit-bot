@@ -1,12 +1,14 @@
 /**
  * Daily Swing Trade Automation Runner
- * Integrated Pipeline:
- * 1. Chartink Screener -> extract candidates
- * 2. NSE Technical Charting -> extract OHLC/Volume metrics + Capture clean Daily Charts
- * 3. Save screenshots date-wise into screenshots/YYYY-MM-DD/
- * 4. Submit to Gemini Gem "Technical Analysis for anti gravity" (28176565b26c) in FLASH MODE
- *    with the exact benchmark-aligned Minervini rubric & ground truth reference cases.
- * 5. Save latest output & date-stamped archive in history/YYYY-MM-DD/
+ * Self-healing pipeline:
+ * 1. Automatically locates or creates tabs for Chartink, NSE Charting, and Gemini Gem.
+ * 2. Runs Chartink 9EMA screener (https://chartink.com/screener/9ema-100025).
+ * 3. Captures daily charts with saved Technical Analysis layout on NSE Charting.
+ * 4. Extracts OHLC & Volume metrics directly from the live DOM.
+ * 5. Saves charts to screenshots/YYYY-MM-DD/.
+ * 6. Verifies Flash mode in Gem 'Technical Analysis for anti gravity' (28176565b26c).
+ * 7. Submits screenshots + structured prompt aligned with Minervini benchmark ground truth.
+ * 8. Saves latest audit to audit_report.md and archives in history/YYYY-MM-DD/.
  */
 
 const fs = require('fs');
@@ -18,7 +20,7 @@ const SCREENSHOTS_BASE_DIR = path.join(PROJECT_DIR, 'screenshots');
 const HISTORY_BASE_DIR = path.join(PROJECT_DIR, 'history');
 const GEM_ANTI_GRAVITY_ID = '28176565b26c';
 
-function getWsUrl(targetUrlSub) {
+function getOrCreateWsUrl(targetUrlSub, fullUrlToOpen) {
   return new Promise((resolve, reject) => {
     http.get('http://127.0.0.1:9222/json', (res) => {
       let data = '';
@@ -27,8 +29,23 @@ function getWsUrl(targetUrlSub) {
         try {
           const pages = JSON.parse(data);
           const match = pages.find(p => p.url && p.url.includes(targetUrlSub));
-          if (match) resolve(match.webSocketDebuggerUrl);
-          else reject(new Error('Page not found matching: ' + targetUrlSub));
+          if (match) {
+            resolve(match.webSocketDebuggerUrl);
+          } else if (fullUrlToOpen) {
+            console.log(`Tab matching "${targetUrlSub}" not found. Auto-opening: ${fullUrlToOpen}...`);
+            const req = http.request(`http://127.0.0.1:9222/json/new?${encodeURIComponent(fullUrlToOpen)}`, { method: 'PUT' }, (newRes) => {
+              let newData = '';
+              newRes.on('data', c => newData += c);
+              newRes.on('end', () => {
+                const newPage = JSON.parse(newData);
+                setTimeout(() => resolve(newPage.webSocketDebuggerUrl), 4000);
+              });
+            });
+            req.on('error', reject);
+            req.end();
+          } else {
+            reject(new Error('Page not found matching: ' + targetUrlSub));
+          }
         } catch (e) {
           reject(e);
         }
@@ -100,8 +117,8 @@ async function runPipeline() {
   if (!fs.existsSync(dateHistoryDir)) fs.mkdirSync(dateHistoryDir, { recursive: true });
 
   // 1. Chartink Screener
-  console.log('Step 1: Running Chartink 9EMA Screener...');
-  const chartinkWsUrl = await getWsUrl('chartink.com/screener/9ema-100025');
+  console.log('Step 1: Connecting to Chartink 9EMA Screener...');
+  const chartinkWsUrl = await getOrCreateWsUrl('chartink.com/screener/9ema-100025', 'https://chartink.com/screener/9ema-100025');
   const chartinkWs = new WebSocket(chartinkWsUrl);
   await new Promise(r => chartinkWs.onopen = r);
 
@@ -143,10 +160,11 @@ async function runPipeline() {
   }
 
   // 2. NSE Technical Charting & Metric Extraction
-  console.log('Step 2: Capturing charts and extracting metrics from NSE Charting...');
-  const nseWsUrl = await getWsUrl('charting.nseindia.com');
+  console.log('Step 2: Connecting to NSE Charting...');
+  const nseWsUrl = await getOrCreateWsUrl('charting.nseindia.com', `https://charting.nseindia.com/?symbol=${stocks[0].symbol}-EQ`);
   const nseWs = new WebSocket(nseWsUrl);
   await new Promise(r => nseWs.onopen = r);
+  await sleep(3000);
 
   const stockMetrics = [];
   const uploadedFiles = [];
@@ -202,28 +220,47 @@ async function runPipeline() {
   }
   nseWs.close();
 
-  // Save stocks data
+  // Save stock metadata
   fs.writeFileSync(path.join(PROJECT_DIR, 'stocks_data.json'), JSON.stringify(stockMetrics, null, 2));
   fs.writeFileSync(path.join(dateHistoryDir, `stocks_data_${todayStr}.json`), JSON.stringify(stockMetrics, null, 2));
 
-  // 3. Prepare Batch Prompt for Gemini Gem (Technical Analysis for anti gravity)
+  // 3. Build Prompt for Gemini Gem
   let promptText = `Analyze this batch of daily stock charts according to the Minervini 9/20 EMA Pullback and VCP framework.\n\nHere is the stock batch and associated market data:\n`;
   stockMetrics.forEach((m, idx) => {
     promptText += `${idx + 1}. ${m.symbol}: CMP ₹${m.price} | OHLC: [O:${m.open}, H:${m.high}, L:${m.low}, C:${m.close}] | Volume: ${m.volume} vs 20 SMA: ${m.volumeSma}\n`;
   });
   promptText += `\nReview the attached chart screenshots in matching order. Evaluate each stock, strictly enforce hard disqualification against breakdowns or inverted trends, and output the summary leaderboard followed by the full trade setup for qualifying stocks using the mandatory output format.`;
 
-  // 4. Submit to Gemini Gem: Technical Analysis for anti gravity
+  // 4. Connect to Gemini Gem
   console.log('Step 3: Connecting to Gemini Gem (Technical Analysis for anti gravity)...');
-  const gemWsUrl = await getWsUrl(`gemini.google.com/gem/${GEM_ANTI_GRAVITY_ID}`);
+  const gemWsUrl = await getOrCreateWsUrl(`gemini.google.com/gem/${GEM_ANTI_GRAVITY_ID}`, `https://gemini.google.com/gem/${GEM_ANTI_GRAVITY_ID}`);
   const gemWs = new WebSocket(gemWsUrl);
   await new Promise(r => gemWs.onopen = r);
+  await sleep(3000);
 
-  // Ensure Flash Mode
+  // Ensure Flash mode
   await ensureFlashMode(gemWs);
 
   // Upload charts
-  const docRes = await cdpSend(gemWs, 'DOM.getDocument');
+  await cdpSend(gemWs, 'DOM.enable');
+  await cdpSend(gemWs, 'Page.enable');
+
+  await cdpSend(gemWs, 'Runtime.evaluate', {
+    expression: `(() => {
+      let input = document.querySelector('input[type="file"]');
+      if (!input) {
+        const upBtn = document.querySelector('button[aria-label="Upload & tools"]') || 
+                      document.querySelector('button[aria-label*="Upload"]') ||
+                      Array.from(document.querySelectorAll('button')).find(b => b.innerText && b.innerText.includes('Upload'));
+        if (upBtn) upBtn.click();
+      }
+      return !!document.querySelector('input[type="file"]');
+    })()`,
+    returnByValue: true
+  });
+  await sleep(1500);
+
+  const docRes = await cdpSend(gemWs, 'DOM.getDocument', { depth: -1 });
   const fileInputNode = await cdpSend(gemWs, 'DOM.querySelector', {
     nodeId: docRes.root.nodeId,
     selector: 'input[type="file"]'
@@ -235,10 +272,10 @@ async function runPipeline() {
     nodeId: fileInputNode.nodeId
   });
 
-  await sleep(6500);
+  await sleep(7000);
 
-  // Enter prompt
-  console.log('Pasting prompt into Gemini Gem...');
+  // Insert prompt
+  console.log('Entering prompt into Gemini Gem...');
   await cdpSend(gemWs, 'Runtime.evaluate', {
     expression: `(() => {
       const editor = document.querySelector('rich-textarea div[contenteditable="true"]') || document.querySelector('div[contenteditable="true"]');
@@ -253,8 +290,8 @@ async function runPipeline() {
 
   await sleep(2000);
 
-  // Submit
-  console.log('Submitting prompt to Gemini Gem...');
+  // Submit prompt
+  console.log('Submitting prompt...');
   await cdpSend(gemWs, 'Runtime.evaluate', {
     expression: `(() => {
       const sendBtn = document.querySelector('button[aria-label="Send message"]');
@@ -262,7 +299,7 @@ async function runPipeline() {
     })()`
   });
 
-  // Poll response
+  // Poll for output
   console.log('Waiting for Gemini Gem response...');
   let gemOutput = '';
   for (let i = 0; i < 90; i++) {
@@ -287,10 +324,10 @@ async function runPipeline() {
 
   gemWs.close();
 
-  // Save outputs
+  // Save audit results
   fs.writeFileSync(path.join(PROJECT_DIR, 'audit_report.md'), gemOutput);
   fs.writeFileSync(path.join(dateHistoryDir, `audit_report_${todayStr}.md`), gemOutput);
-  console.log(`[${new Date().toISOString()}] Pipeline finished. Audit saved to ${path.join(PROJECT_DIR, 'audit_report.md')}`);
+  console.log(`[${new Date().toISOString()}] Completed! Saved to ${path.join(PROJECT_DIR, 'audit_report.md')}`);
 }
 
 if (require.main === module) {

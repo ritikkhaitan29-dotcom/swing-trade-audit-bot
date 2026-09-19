@@ -1,82 +1,24 @@
 [
   {
-    "symbol": "KPIL",
-    "name": "Kalpataru Projects International Ltd",
-    "price": "1,435.70",
-    "todayVolume": "107.49 K",
-    "volume20Sma": "161.08 K",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\KPIL_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\KPIL_Daily_Chart.png",
-    "filename": "KPIL_Daily_Chart.png"
+    "symbol": "RBLBANK",
+    "price": "404.00",
+    "open": "404.80",
+    "high": "406.70",
+    "low": "395.95",
+    "close": "404.00",
+    "volume": "N/A",
+    "volumeSma": "N/A",
+    "targetPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\2026-09-16\\RBLBANK_Daily_Chart.png"
   },
   {
-    "symbol": "GLENMARK",
-    "name": "Glenmark Pharmaceuticals Limited",
-    "price": "2,419.20",
-    "todayVolume": "346.69 K",
-    "volume20Sma": "507.76 K",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\GLENMARK_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\GLENMARK_Daily_Chart.png",
-    "filename": "GLENMARK_Daily_Chart.png"
-  },
-  {
-    "symbol": "SWIGGY",
-    "name": "Swiggy Ltd",
-    "price": "278.20",
-    "todayVolume": "17.23 M",
-    "volume20Sma": "24.8 M",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\SWIGGY_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\SWIGGY_Daily_Chart.png",
-    "filename": "SWIGGY_Daily_Chart.png"
-  },
-  {
-    "symbol": "SBFC",
-    "name": "SBFC Finance Ltd",
-    "price": "98.19",
-    "todayVolume": "411.97 K",
-    "volume20Sma": "2.99 M",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\SBFC_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\SBFC_Daily_Chart.png",
-    "filename": "SBFC_Daily_Chart.png"
-  },
-  {
-    "symbol": "CRISIL",
-    "name": "Crisil Limited",
-    "price": "4,697.90",
-    "todayVolume": "24.02 K",
-    "volume20Sma": "52.81 K",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\CRISIL_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\CRISIL_Daily_Chart.png",
-    "filename": "CRISIL_Daily_Chart.png"
-  },
-  {
-    "symbol": "BOSCHLTD",
-    "name": "Bosch Limited",
-    "price": "48,385.00",
-    "todayVolume": "19.9 K",
-    "volume20Sma": "38.21 K",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\BOSCHLTD_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\BOSCHLTD_Daily_Chart.png",
-    "filename": "BOSCHLTD_Daily_Chart.png"
-  },
-  {
-    "symbol": "GLAND",
-    "name": "Gland Pharma Ltd",
-    "price": "2,922.30",
-    "todayVolume": "389 K",
-    "volume20Sma": "582.4 K",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\GLAND_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\GLAND_Daily_Chart.png",
-    "filename": "GLAND_Daily_Chart.png"
-  },
-  {
-    "symbol": "NAVINFLUOR",
-    "name": "Navin Fluorine International Limited",
-    "price": "8,543.50",
-    "todayVolume": "86.54 K",
-    "volume20Sma": "128.47 K",
-    "screenshotPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\NAVINFLUOR_Daily_Chart.png",
-    "brainPath": "C:\\Users\\ritik\\.gemini\\antigravity-ide\\brain\\0cefecba-10dd-42f6-b1c5-247fd8758a95\\NAVINFLUOR_Daily_Chart.png",
-    "filename": "NAVINFLUOR_Daily_Chart.png"
+    "symbol": "LENSKART",
+    "price": "675.85",
+    "open": "688.40",
+    "high": "689.90",
+    "low": "667.25",
+    "close": "675.85",
+    "volume": "N/A",
+    "volumeSma": "N/A",
+    "targetPath": "C:\\Users\\ritik\\OneDrive\\Desktop\\AI\\Tools\\Swing Trade Stocks\\screenshots\\2026-09-16\\LENSKART_Daily_Chart.png"
   }
 ]

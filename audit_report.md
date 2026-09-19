@@ -1,0 +1,1 @@
+No stocks qualified today from the 9EMA screener.
